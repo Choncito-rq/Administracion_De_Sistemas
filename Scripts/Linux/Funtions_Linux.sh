@@ -422,7 +422,7 @@ function instalar_ssh() {
 # -------------------------------------------------------------------------------------------------- Configurar SSH
 
 function configurar_red_linux() {
-    local interfaz="enp0s9"
+    local interfaz="enp0s8"
     echo -e "\n=== CONFIGURACIÓN DE RED (NETPLAN) ==="
 
     while true; do
@@ -472,8 +472,8 @@ function verificar_estado_linux() {
     fi
 
     # Verificar IP
-    ip_actual=$(ip -4 addr show enp0s9 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
-    echo -e "IP en enp0s9:        \033[0;33m${ip_actual:-"No configurada"}\033[0m"
+    ip_actual=$(ip -4 addr show enp0s8 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+    echo -e "IP en enp0s8:        \033[0;33m${ip_actual:-"No configurada"}\033[0m"
     
     # Verificar puerto
     puerto=$(ss -tlpn | grep :22)
