@@ -555,7 +555,7 @@ function Install-SSHService {
 # -------------------------------------------------------------------------------------------------- Configurar SSH
 
 function Set-SSHNetwork {
-   $IfName = "Ethernet 3"
+   $IfName = "Ethernet 2"
    Write-Host "======= Configuracion de red ========"
 
    do { 
@@ -584,7 +584,7 @@ function Test-SSHStatus {
     Write-Host "======== Verificacion de conexion ========"
     $service = Get-Service sshd -ErrorAction SilentlyContinue
     $firewall = Get-NetFirewallRule -Enabled True | Where-Object { $_.LocalPort -eq 22 -or $_.DisplayName -match "OpenSSH" } | Select-Object -First 1
-    $interface = "Ethernet 3"
+    $interface = "Ethernet 2"
     $ipData = Get-NetIPAddress -InterfaceAlias $interface -AddressFamily IPv4 -ErrorAction SilentlyContinue
     $ip = if ($ipData) { $ipData.IPAddress } else { "No asignada" }
 
