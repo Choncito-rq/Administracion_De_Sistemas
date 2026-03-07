@@ -1,27 +1,27 @@
 #Requires -RunAsAdministrator
 
-#Monitoring
-
-# -------------------------------------------------------------------------------------------------- Monitoreo del S.O
+# ================================================================================================
+#                                         MONITORING
+# ================================================================================================
 
 function Monitoring-vm {
-   Write-Host "===== DIAGNOSTICO DEL SISTEMA ====="
+    Write-Host "===== DIAGNOSTICO DEL SISTEMA ====="
 
-   Write-Host "Nombre del equipo:"
-   hostname
+    Write-Host "Nombre del equipo:"
+    hostname
 
-   Write-Host ""
-   Write-Host "Direcciones IP:"
-   ipconfig
+    Write-Host ""
+    Write-Host "Direcciones IP:"
+    ipconfig
 
-   Write-Host ""
-   Write-Host "Espacio en disco:"
-   Get-PSDrive C
+    Write-Host ""
+    Write-Host "Espacio en disco:"
+    Get-PSDrive C
 }
 
-# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-# -------------------------------------------------------------------------------------------------- Validaciones
+# ================================================================================================
+#                                         VALIDACIONES
+# ================================================================================================
 
 function Convert-IPToUInt32 ([string]$IP) {
     $bytes = ([System.Net.IPAddress]$IP).GetAddressBytes()
@@ -37,16 +37,16 @@ function Convert-UInt32ToIP ([uint32]$IPValue) {
 
 function Get-NetworkID {
     param([string]$IP, [string]$Mask)
-    $ipB = ([System.Net.IPAddress]$IP).GetAddressBytes()
+    $ipB   = ([System.Net.IPAddress]$IP).GetAddressBytes()
     $maskB = ([System.Net.IPAddress]$Mask).GetAddressBytes()
-    $netB = New-Object byte[] 4
-    for ($i=0; $i -lt 4; $i++) { $netB[$i] = $ipB[$i] -band $maskB[$i] }
+    $netB  = New-Object byte[] 4
+    for ($i = 0; $i -lt 4; $i++) { $netB[$i] = $ipB[$i] -band $maskB[$i] }
     return ([System.Net.IPAddress]$netB).ToString()
 }
 
 function Test-ValidIP ($IP) {
-    if ([string]::IsNullOrWhiteSpace($IP) -or $IP -eq "localhost" -or $IP -eq "127.0.0.0" -or $IP -eq "0.0.0.0") { 
-        return $false 
+    if ([string]::IsNullOrWhiteSpace($IP) -or $IP -eq "localhost" -or $IP -eq "127.0.0.0" -or $IP -eq "0.0.0.0") {
+        return $false
     }
     if ($IP -match "^([0-9]{1,3}\.){3}[0-9]{1,3}$") {
         $ipParsed = $null
@@ -56,10 +56,14 @@ function Test-ValidIP ($IP) {
 }
 
 $global:MaskCidrTable = @{
-    "128.0.0.0" = 1; "192.0.0.0" = 2; "224.0.0.0" = 3; "240.0.0.0" = 4; "248.0.0.0" = 5; "252.0.0.0" = 6; "254.0.0.0" = 7; "255.0.0.0" = 8;
-    "255.128.0.0" = 9; "255.192.0.0" = 10; "255.224.0.0" = 11; "255.240.0.0" = 12; "255.248.0.0" = 13; "255.252.0.0" = 14; "255.254.0.0" = 15; "255.255.0.0" = 16;
-    "255.255.128.0" = 17; "255.255.192.0" = 18; "255.255.224.0" = 19; "255.255.240.0" = 20; "255.255.248.0" = 21; "255.255.252.0" = 22; "255.255.254.0" = 23; "255.255.255.0" = 24;
-    "255.255.255.128" = 25; "255.255.255.192" = 26; "255.255.255.224" = 27; "255.255.255.240" = 28; "255.255.255.248" = 29; "255.255.255.252" = 30; "255.255.255.254" = 31; "255.255.255.255" = 32
+    "128.0.0.0" = 1;  "192.0.0.0" = 2;  "224.0.0.0" = 3;  "240.0.0.0" = 4;
+    "248.0.0.0" = 5;  "252.0.0.0" = 6;  "254.0.0.0" = 7;  "255.0.0.0" = 8;
+    "255.128.0.0" = 9;  "255.192.0.0" = 10; "255.224.0.0" = 11; "255.240.0.0" = 12;
+    "255.248.0.0" = 13; "255.252.0.0" = 14; "255.254.0.0" = 15; "255.255.0.0" = 16;
+    "255.255.128.0" = 17; "255.255.192.0" = 18; "255.255.224.0" = 19; "255.255.240.0" = 20;
+    "255.255.248.0" = 21; "255.255.252.0" = 22; "255.255.254.0" = 23; "255.255.255.0" = 24;
+    "255.255.255.128" = 25; "255.255.255.192" = 26; "255.255.255.224" = 27; "255.255.255.240" = 28;
+    "255.255.255.248" = 29; "255.255.255.252" = 30; "255.255.255.254" = 31; "255.255.255.255" = 32
 }
 
 function Test-ValidMask ($IP) {
@@ -70,11 +74,9 @@ function Get-CidrLength ([string]$Mask) {
     return $global:MaskCidrTable[$Mask]
 }
 
-# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#DHCP Funtions
-
-# -------------------------------------------------------------------------------------------------- Consulta/Instalación/Estado
+# ================================================================================================
+#                                         DHCP
+# ================================================================================================
 
 function Mostrar-Verificacion {
     Clear-Host
@@ -88,7 +90,6 @@ function Mostrar-Verificacion {
     Write-Host ""
     Read-Host "Presione ENTER para continuar"
 }
-
 
 function Instalar-Servicio {
     Clear-Host
@@ -132,8 +133,6 @@ function Consultar-Estado {
     Read-Host "Presione ENTER para continuar"
 }
 
-# -------------------------------------------------------------------------------------------------- Crear ámbito
-
 function Configurar-Ambito {
     Clear-Host
     Write-Host "=== CREAR / CONFIGURAR AMBITO DHCP ===" -ForegroundColor Cyan
@@ -141,19 +140,18 @@ function Configurar-Ambito {
     $ScopeName = Read-Host "Nombre descriptivo del Ambito"
     if ([string]::IsNullOrWhiteSpace($ScopeName)) { $ScopeName = "Ambito_General" }
 
-    do { 
+    do {
         $StartIP = Read-Host "Rango Inicial (Ejem: 192.168.100.1)"
         if (-not (Test-ValidIP $StartIP)) { Write-Host "IP invalida o restringida." -ForegroundColor Red }
     } until (Test-ValidIP $StartIP)
 
-    do { 
+    do {
         $EndIP = Read-Host "Rango Final (Ejem: 192.168.100.50)"
-        $isValidIP = Test-ValidIP $EndIP
+        $isValidIP    = Test-ValidIP $EndIP
         $isValidRange = $false
-
         if ($isValidIP) {
             $IntStart = Convert-IPToUInt32 $StartIP
-            $IntEnd = Convert-IPToUInt32 $EndIP
+            $IntEnd   = Convert-IPToUInt32 $EndIP
             if ($IntEnd -gt $IntStart) {
                 $isValidRange = $true
             } else {
@@ -164,13 +162,13 @@ function Configurar-Ambito {
         }
     } until ($isValidIP -and $isValidRange)
 
-    do { 
+    do {
         $Mask = Read-Host "Mascara de subred (Ejem: 255.255.255.0)"
         if (-not (Test-ValidMask $Mask)) { Write-Host "Mascara invalida." -ForegroundColor Red }
     } until (Test-ValidMask $Mask)
 
     do {
-        $Lease = Read-Host "Tiempo de concesion en segundos (Minimo 60)"
+        $Lease       = Read-Host "Tiempo de concesion en segundos (Minimo 60)"
         $isValidLease = ($Lease -match "^\d+$" -and [int]$Lease -ge 60)
         if (-not $isValidLease) { Write-Host "Error: Debe ser un numero entero mayor o igual a 60." -ForegroundColor Red }
     } until ($isValidLease)
@@ -187,13 +185,11 @@ function Configurar-Ambito {
         if (-not (Test-ValidIP $DNS)) { Write-Host "Formato de IP invalido." -ForegroundColor Red }
     } until ([string]::IsNullOrWhiteSpace($DNS) -or (Test-ValidIP $DNS))
 
-    $NetworkID = Get-NetworkID -IP $StartIP -Mask $Mask
-
-    $ServerIP = $StartIP
+    $NetworkID   = Get-NetworkID -IP $StartIP -Mask $Mask
+    $ServerIP    = $StartIP
     $DhcpStartIP = Convert-UInt32ToIP ((Convert-IPToUInt32 $StartIP) + 1)
-    $Cidr = Get-CidrLength $Mask
-
-    $IfName = "Ethernet 2"
+    $Cidr        = Get-CidrLength $Mask
+    $IfName      = "Ethernet 2"
 
     Write-Host "`n[*] Resumen Logico ($ScopeName):" -ForegroundColor Yellow
     Write-Host "- Interfaz objetivo: $IfName"
@@ -212,18 +208,13 @@ function Configurar-Ambito {
     Write-Host "[*] Creando Ambito DHCP en el servidor..." -ForegroundColor Yellow
     try {
         $TimeSpan = [TimeSpan]::FromSeconds([int]$Lease)
-
-        $exists = Get-DhcpServerv4Scope -ScopeId $NetworkID -ErrorAction SilentlyContinue
+        $exists   = Get-DhcpServerv4Scope -ScopeId $NetworkID -ErrorAction SilentlyContinue
         if ($exists) { Remove-DhcpServerv4Scope -ScopeId $NetworkID -Force }
 
         Add-DhcpServerv4Scope -Name $ScopeName -StartRange $DhcpStartIP -EndRange $EndIP -SubnetMask $Mask -LeaseDuration $TimeSpan -State Active -ErrorAction Stop
 
-        if (-not [string]::IsNullOrWhiteSpace($GW)) {
-            Set-DhcpServerv4OptionValue -ScopeId $NetworkID -OptionId 3 -Value $GW -Force
-        }
-        if (-not [string]::IsNullOrWhiteSpace($DNS)) {
-            Set-DhcpServerv4OptionValue -ScopeId $NetworkID -OptionId 6 -Value $DNS -Force
-        }
+        if (-not [string]::IsNullOrWhiteSpace($GW))  { Set-DhcpServerv4OptionValue -ScopeId $NetworkID -OptionId 3 -Value $GW  -Force }
+        if (-not [string]::IsNullOrWhiteSpace($DNS)) { Set-DhcpServerv4OptionValue -ScopeId $NetworkID -OptionId 6 -Value $DNS -Force }
 
         Restart-Service DHCPServer -ErrorAction SilentlyContinue
         Write-Host "[+] SERVICIO DHCP CONFIGURADO Y ACTIVO." -ForegroundColor Green
@@ -234,8 +225,6 @@ function Configurar-Ambito {
     Write-Host ""
     Read-Host "Presione ENTER para continuar"
 }
-
-# -------------------------------------------------------------------------------------------------- Gestionar ambitos
 
 function Gestionar-Ambito {
     Clear-Host
@@ -251,8 +240,7 @@ function Gestionar-Ambito {
     $ambitos | Select-Object ScopeId, Name, StartRange, EndRange, State | Format-Table -AutoSize
 
     $TargetId = Read-Host "Ingrese la 'ScopeId' (ID de Red) del ambito a gestionar"
-
-    $ambito = Get-DhcpServerv4Scope -ScopeId $TargetId -ErrorAction SilentlyContinue
+    $ambito   = Get-DhcpServerv4Scope -ScopeId $TargetId -ErrorAction SilentlyContinue
     if (-not $ambito) {
         Write-Host "Ambito no encontrado." -ForegroundColor Red
         Read-Host "Presione ENTER para continuar"
@@ -282,8 +270,6 @@ function Gestionar-Ambito {
     Read-Host "Presione ENTER para continuar"
 }
 
-# -------------------------------------------------------------------------------------------------- Monitoreo del DHCP
-
 function Monitorear-IPs {
     Clear-Host
     Write-Host "=== IPs ASIGNADAS ACTUALMENTE (LEASES) ===" -ForegroundColor Cyan
@@ -306,11 +292,9 @@ function Monitorear-IPs {
     Read-Host "Presione ENTER para volver al menu"
 }
 
-# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#DNS Funtions
-
-# -------------------------------------------------------------------------------------------------- Instalacion/Obtencion DHCP
+# ================================================================================================
+#                                         DNS
+# ================================================================================================
 
 function Instalar-DNS {
     Clear-Host
@@ -334,65 +318,45 @@ function Instalar-DNS {
 }
 
 function Obtener-Rango-DHCP {
-
     $ambito = Get-DhcpServerv4Scope | Select-Object -First 1
     if (-not $ambito) { return $null }
-
-    return @{
-        Start = $ambito.StartRange
-        End   = $ambito.EndRange
-        Scope = $ambito.ScopeId
-    }
+    return @{ Start = $ambito.StartRange; End = $ambito.EndRange; Scope = $ambito.ScopeId }
 }
 
 function Obtener-IP-Libre-DNS {
-
     $rango = Obtener-Rango-DHCP
     if (-not $rango) { return $null }
 
     $start = Convert-IPToUInt32 $rango.Start
     $end   = Convert-IPToUInt32 $rango.End
 
-    $zonas = Get-DnsServerZone -ErrorAction SilentlyContinue |
-             Where-Object {$_.ZoneType -eq "Primary"}
+    $zonas = Get-DnsServerZone -ErrorAction SilentlyContinue | Where-Object { $_.ZoneType -eq "Primary" }
 
     $ipsUsadas = @()
-
     foreach ($zona in $zonas) {
         $record = Get-DnsServerResourceRecord -ZoneName $zona.ZoneName -RRType A -ErrorAction SilentlyContinue |
-                  Where-Object {$_.HostName -eq "@"}
-        if ($record) {
-            $ipsUsadas += Convert-IPToUInt32 $record.RecordData.IPv4Address.IPAddressToString
-        }
+                  Where-Object { $_.HostName -eq "@" }
+        if ($record) { $ipsUsadas += Convert-IPToUInt32 $record.RecordData.IPv4Address.IPAddressToString }
     }
 
     for ($i = $start; $i -le $end; $i++) {
-        if ($ipsUsadas -notcontains $i) {
-            return Convert-UInt32ToIP $i
-        }
+        if ($ipsUsadas -notcontains $i) { return Convert-UInt32ToIP $i }
     }
-
     return $null
 }
-
-# -------------------------------------------------------------------------------------------------- Alta/Baja/Consultado
 
 function Alta-Dominio {
     Clear-Host
     Write-Host "=== CREACION DE DOMINIO DNS ===" -ForegroundColor Cyan
 
-    # 1. Pedir el nombre del dominio
     $Dominio = Read-Host "Introduce el nombre del dominio (ej. reprobados.com)"
-
     if ([string]::IsNullOrWhiteSpace($Dominio)) {
         Write-Host "[!] El nombre de dominio no puede estar vacio." -ForegroundColor Red
         Read-Host "Presione ENTER para continuar"
         return
     }
 
-    # 2. Pedir la IP destino y validarla
     $ServerIP = Read-Host "Introduce la IP a la que apuntara (ej. 192.168.100.21)"
-
     if (-not (Test-ValidIP $ServerIP)) {
         Write-Host "[!] La IP ingresada no es valida o tiene un formato incorrecto." -ForegroundColor Red
         Read-Host "Presione ENTER para continuar"
@@ -400,26 +364,17 @@ function Alta-Dominio {
     }
 
     try {
-        # Si la zona ya existe, la borramos para recrearla limpia
         if (Get-DnsServerZone -Name $Dominio -ErrorAction SilentlyContinue) {
             Remove-DnsServerZone -Name $Dominio -Force
         }
 
         Write-Host "[*] Creando archivo de zona y registros..." -ForegroundColor Yellow
-
-        # Crear Zona Primaria
         Add-DnsServerPrimaryZone -Name $Dominio -ZoneFile "$Dominio.dns"
-
-        # Crear Registro @ (Raíz)
-        Add-DnsServerResourceRecordA -ZoneName $Dominio -Name "@" -IPv4Address $ServerIP
-
-        # Crear Registro www (CNAME)
+        Add-DnsServerResourceRecordA     -ZoneName $Dominio -Name "@"   -IPv4Address $ServerIP
         Add-DnsServerResourceRecordCName -ZoneName $Dominio -Name "www" -HostNameAlias "$Dominio."
 
         Write-Host "[OK] Zona '$Dominio' creada con exito." -ForegroundColor Green
         Write-Host "[OK] Registros A y CNAME apuntando a $ServerIP." -ForegroundColor Green
-
-        # Reiniciar caché DNS local para que tome los cambios de inmediato
         Clear-DnsServerCache -Force
     } catch {
         Write-Host "[ERROR] Al configurar DNS: $($_.Exception.Message)" -ForegroundColor Red
@@ -430,16 +385,11 @@ function Alta-Dominio {
 }
 
 function Baja-Dominio {
-
     Clear-Host
     Write-Host "=== ELIMINAR DOMINIO DNS ===" -ForegroundColor Cyan
 
     $zonas = Get-DnsServerZone -ErrorAction SilentlyContinue |
-             Where-Object {
-                 $_.ZoneType -eq "Primary" -and
-                 $_.ZoneName -notmatch "in-addr.arpa" -and
-                 $_.ZoneName -ne "TrustAnchors"
-             }
+             Where-Object { $_.ZoneType -eq "Primary" -and $_.ZoneName -notmatch "in-addr.arpa" -and $_.ZoneName -ne "TrustAnchors" }
 
     if (-not $zonas) {
         Write-Host "No existen dominios creados manualmente." -ForegroundColor Yellow
@@ -448,21 +398,13 @@ function Baja-Dominio {
     }
 
     foreach ($zona in $zonas) {
-
         $record = Get-DnsServerResourceRecord -ZoneName $zona.ZoneName -RRType A -ErrorAction SilentlyContinue |
-                  Where-Object {$_.HostName -eq "@"}
-
-        $ip = if ($record) {
-            $record.RecordData.IPv4Address.IPAddressToString
-        } else {
-            "Sin IP"
-        }
-
+                  Where-Object { $_.HostName -eq "@" }
+        $ip = if ($record) { $record.RecordData.IPv4Address.IPAddressToString } else { "Sin IP" }
         Write-Host "$($zona.ZoneName)  ->  IP: $ip"
     }
 
-    $nombreDominio = Read-Host "Escriba el NOMBRE del dominio a eliminar"
-
+    $nombreDominio  = Read-Host "Escriba el NOMBRE del dominio a eliminar"
     $zonaEncontrada = $zonas | Where-Object { $_.ZoneName -eq $nombreDominio }
 
     if (-not $zonaEncontrada) {
@@ -472,12 +414,10 @@ function Baja-Dominio {
     }
 
     $confirmar = Read-Host "Seguro que desea eliminar $nombreDominio ? (s/n)"
-
     if ($confirmar -match "^[sS]$") {
         Remove-DnsServerZone -Name $nombreDominio -Force
         Write-Host "Dominio eliminado correctamente." -ForegroundColor Green
-    }
-    else {
+    } else {
         Write-Host "Operacion cancelada."
     }
 
@@ -485,32 +425,19 @@ function Baja-Dominio {
 }
 
 function Listar-Dominios {
-
     Clear-Host
     Write-Host "=== DOMINIOS CONFIGURADOS ===" -ForegroundColor Cyan
 
     $zonas = Get-DnsServerZone -ErrorAction SilentlyContinue |
-             Where-Object {
-                 $_.ZoneType -eq "Primary" -and
-                 $_.ZoneName -notmatch "in-addr.arpa" -and
-                 $_.ZoneName -ne "TrustAnchors"
-             }
+             Where-Object { $_.ZoneType -eq "Primary" -and $_.ZoneName -notmatch "in-addr.arpa" -and $_.ZoneName -ne "TrustAnchors" }
 
     if (-not $zonas) {
         Write-Host "No hay dominios creados manualmente." -ForegroundColor Yellow
-    }
-    else {
+    } else {
         foreach ($zona in $zonas) {
-
             $record = Get-DnsServerResourceRecord -ZoneName $zona.ZoneName -RRType A -ErrorAction SilentlyContinue |
-                      Where-Object {$_.HostName -eq "@"}
-
-            $ip = if ($record) {
-                $record.RecordData.IPv4Address.IPAddressToString
-            } else {
-                "Sin IP"
-            }
-
+                      Where-Object { $_.HostName -eq "@" }
+            $ip = if ($record) { $record.RecordData.IPv4Address.IPAddressToString } else { "Sin IP" }
             Write-Host "Dominio: $($zona.ZoneName)  ->  IP: $ip"
         }
     }
@@ -518,82 +445,239 @@ function Listar-Dominios {
     Read-Host "ENTER para continuar"
 }
 
-# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#SSH Funtions
-
-# -------------------------------------------------------------------------------------------------- Instalacion
+# ================================================================================================
+#                                         SSH
+# ================================================================================================
 
 function Install-SSHService {
     param([switch]$Reinstall)
 
     if ($Reinstall) {
-        Write-Host "[*] Eliminando OpenSSH Server para reinstalación..." 
+        Write-Host "[*] Eliminando OpenSSH Server para reinstalacion..."
         Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0 | Out-Null
     }
 
     Write-Host "[*] Comprobando capacidad de OpenSSH Server..." -ForegroundColor Cyan
     $check = Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Server*'
-    
+
     if ($check.State -ne 'Installed') {
         Write-Host "[*] Instalando OpenSSH Server..." -ForegroundColor Yellow
         Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0 | Out-Null
     }
 
-    Write-Host "[*] Configurando servicio en inicio automático..." -ForegroundColor Cyan
+    Write-Host "[*] Configurando servicio en inicio automatico..." -ForegroundColor Cyan
     Set-Service -Name sshd -StartupType 'Automatic'
     Start-Service sshd -ErrorAction SilentlyContinue
 
-    # Asegurar regla de Firewall
     if (!(Get-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -ErrorAction SilentlyContinue)) {
         New-NetFirewallRule -Name 'OpenSSH-Server-In-TCP' -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22 | Out-Null
     }
-    
+
     Write-Host "[+] Servicio SSH listo y activo." -ForegroundColor Green
 }
 
-# -------------------------------------------------------------------------------------------------- Configurar SSH
-
 function Set-SSHNetwork {
-   $IfName = "Ethernet 2"
-   Write-Host "======= Configuracion de red ========"
+    $IfName = "Ethernet 3"
+    Write-Host "======= Configuracion de red ========"
 
-   do { 
-        $NuevaIP = Read-Host "Rango Inicial (Ejem: 192.168.100.1)"
+    do {
+        $NuevaIP = Read-Host "IP fija para este servidor (Ejem: 192.168.100.1)"
         if (-not (Test-ValidIP $NuevaIP)) { Write-Host "IP invalida o restringida" }
     } until (Test-ValidIP $NuevaIP)
 
-   $Mascara = Read-Host "Ingrese el prefijo (ponle 24) "
+    $Mascara = Read-Host "Ingrese el prefijo (ponle 24)"
 
-   Write-Host "[*] Limpiando configuraciones previas en $IfName ..."
-   Get-NetIPAddress -InterfaceAlias $IfName -AddressFamily IPv4 | Remove-NetIPAddress -Confirm:$false -ErrorAction SilentlyContinue
+    Write-Host "[*] Limpiando configuraciones previas en $IfName ..."
+    Get-NetIPAddress -InterfaceAlias $IfName -AddressFamily IPv4 | Remove-NetIPAddress -Confirm:$false -ErrorAction SilentlyContinue
 
-   Write-Host "[*] Asignando nueva IP: $NuevaIP/$Mascara ..."
-   try{
-       New-NetIPAddress -InterfaceAlias $IfName -IPAddress $NuevaIP -PrefixLength $Mascara -AddressFamily IPv4 -ErrorAction Stop | Out-Null
-       Write-Host "[+] Red configurada exitosamente"
-      } catch {
-       Write-Host "[D:] Error al asignar IP: $($_.Exception.Message)"
+    Write-Host "[*] Asignando nueva IP: $NuevaIP/$Mascara ..."
+    try {
+        New-NetIPAddress -InterfaceAlias $IfName -IPAddress $NuevaIP -PrefixLength $Mascara -AddressFamily IPv4 -ErrorAction Stop | Out-Null
+        Write-Host "[+] Red configurada exitosamente"
+    } catch {
+        Write-Host "[D:] Error al asignar IP: $($_.Exception.Message)"
     }
 }
-
-# -------------------------------------------------------------------------------------------------- Monitorear SSH
 
 function Test-SSHStatus {
     Clear-Host
     Write-Host "======== Verificacion de conexion ========"
-    $service = Get-Service sshd -ErrorAction SilentlyContinue
+    $service  = Get-Service sshd -ErrorAction SilentlyContinue
     $firewall = Get-NetFirewallRule -Enabled True | Where-Object { $_.LocalPort -eq 22 -or $_.DisplayName -match "OpenSSH" } | Select-Object -First 1
-    $interface = "Ethernet 2"
-    $ipData = Get-NetIPAddress -InterfaceAlias $interface -AddressFamily IPv4 -ErrorAction SilentlyContinue
-    $ip = if ($ipData) { $ipData.IPAddress } else { "No asignada" }
+    $interface = "Ethernet 3"
+    $ipData   = Get-NetIPAddress -InterfaceAlias $interface -AddressFamily IPv4 -ErrorAction SilentlyContinue
+    $ip       = if ($ipData) { $ipData.IPAddress } else { "No asignada" }
 
-    Write-Host "Estado del servicio:      " -NoNewline
-    if ($service.Status -eq 'Running') { Write-Host "Running" } else { Write-Host "Detenido" }
+    Write-Host "Estado del servicio:   " -NoNewline
+    if ($service.Status -eq 'Running') { Write-Host "Running" -ForegroundColor Green } else { Write-Host "Detenido" -ForegroundColor Red }
 
-#-----------------------------------------------------
-Write-Host "Puerto 22 Abierto:            " -NoNewline
-    if ($firewall) { Write-Host "SÍ" -ForegroundColor Green } else { Write-Host "NO" }
+    Write-Host "Puerto 22 Abierto:     " -NoNewline
+    if ($firewall) { Write-Host "SI" -ForegroundColor Green } else { Write-Host "NO" -ForegroundColor Red }
 
-    Write-Host "IP de escucha:            " -NoNewline; Write-Host "$ip"
+    Write-Host "IP de escucha:         " -NoNewline
+    Write-Host "$ip"
+}
+
+# ================================================================================================
+#                                         FTP
+# ================================================================================================
+
+function installFTP {
+    Install-WindowsFeature Web-Server -IncludeAllSubFeature
+    Install-WindowsFeature Web-FTP-Service -IncludeAllSubFeature
+    Install-WindowsFeature Web-FTP-Server -IncludeAllSubFeature
+    Install-WindowsFeature Web-Basic-Auth
+
+    New-NetFirewallRule -DisplayName "FTP" -Direction Inbound -Protocol TCP -LocalPort 21 -Action Allow
+    Import-Module WebAdministration
+
+    # Creacion de la estructura de carpetas
+    if (-not (Test-Path "C:\FTP")) {
+        mkdir C:\FTP
+        mkdir C:\FTP\LocalUser
+        mkdir C:\FTP\LocalUser\Public
+        mkdir C:\FTP\LocalUser\Public\General
+    }
+
+    # Permisos para que IUSR no herede permisos que no debe
+    icacls "C:\FTP\LocalUser\Public" /inheritance:r
+    icacls "C:\FTP\LocalUser\Public" /remove "BUILTIN\Usuarios"
+    icacls "C:\FTP\LocalUser\Public" /grant "IUSR:(OI)(CI)RX"
+    icacls "C:\FTP\LocalUser\Public" /grant "SYSTEM:(OI)(CI)F"
+    icacls "C:\FTP\LocalUser\Public" /grant "Administrators:(OI)(CI)F"
+
+    # RX a grupos para que puedan traversar Public y llegar a General via symlink
+    icacls "C:\FTP\LocalUser\Public" /grant "Reprobados:(RX)"
+    icacls "C:\FTP\LocalUser\Public" /grant "Recursadores:(RX)"
+
+    # Permisos de ejecucion y lectura en General (para anon)
+    icacls "C:\FTP\LocalUser\Public\General" /grant "IUSR:(OI)(CI)RX"
+
+    if (-not (Get-WebSite -Name "FTP" -ErrorAction SilentlyContinue)) {
+        New-WebFtpSite -Name "FTP" -Port 21 -PhysicalPath "C:\FTP"
+        Write-Host "Sitio FTP creado."
+    } else {
+        Write-Host "El sitio FTP ya existe."
+    }
+
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.basicAuthentication.enabled -Value $true
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.anonymousAuthentication.enabled -Value $true
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.anonymousAuthentication.username -Value "IUSR"
+
+    Clear-WebConfiguration -Filter "/system.ftpServer/security/authorization" -PSPath IIS:\ -Location "FTP"
+    Add-WebConfiguration "/system.ftpServer/security/authorization" -Value @{accessType="Allow";users="?";permissions=1} -PSPath IIS:\ -Location "FTP"
+    Add-WebConfiguration "/system.ftpServer/security/authorization" -Value @{accessType="Allow";users="*";permissions=3} -PSPath IIS:\ -Location "FTP"
+}
+
+function setupGroups {
+    if (-not ($ADSI.Children | Where-Object { $_.SchemaClassName -eq "Group" -and $_.Name -eq "Reprobados" })) {
+        if (-not (Test-Path "C:\FTP\Reprobados")) { New-Item -Path "C:\FTP\Reprobados" -ItemType Directory | Out-Null }
+        $ftpGroup = $ADSI.Create("Group", "Reprobados")
+        $ftpGroup.SetInfo()
+        $ftpGroup.Description = "Team de reprobados"
+        $ftpGroup.SetInfo()
+    }
+    if (-not ($ADSI.Children | Where-Object { $_.SchemaClassName -eq "Group" -and $_.Name -eq "Recursadores" })) {
+        if (-not (Test-Path "C:\FTP\Recursadores")) { New-Item -Path "C:\FTP\Recursadores" -ItemType Directory | Out-Null }
+        $ftpGroup = $ADSI.Create("Group", "Recursadores")
+        $ftpGroup.SetInfo()
+        $ftpGroup.Description = "Este grupo son los q valieron queso en ASM y SysADM"
+        $ftpGroup.SetInfo()
+    }
+}
+
+function addUser {
+    do {
+        $global:FTPUserName = Read-Host "Ingrese el nombre de usuario"
+        if ((Get-LocalUser -Name $global:FTPUserName -ErrorAction SilentlyContinue)) {
+            Write-Host "Usuario ya Existente ($global:FTPUserName)"
+        }
+    } while ((Get-LocalUser -Name $global:FTPUserName -ErrorAction SilentlyContinue))
+
+    $regex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$"
+    do {
+        $global:FTPPassword = Read-Host "Ingresar una contrasena"
+        if ($global:FTPPassword -notmatch $regex) {
+            Write-Host "Contrasena no valida, que contenga Mayuscula, minuscula, numero y minimo de 8 caracteres"
+        } else { break }
+    } while ($true)
+
+    Write-Host "INGRESE A CUAL GRUPO PERTENECERA"
+    $group = Read-Host "1-Reprobados  2-Recursadores"
+    if ($group -eq 1)    { $global:FTPUserGroupName = "Reprobados" }
+    elseif ($group -eq 2){ $global:FTPUserGroupName = "Recursadores" }
+
+    $newUser = $global:ADSI.create("User", $global:FTPUserName)
+    $newUser.SetInfo()
+    $newUser.SetPassword($global:FTPPassword)
+    $newUser.SetInfo()
+
+    if (-not (Test-Path "C:\FTP\LocalUser\$global:FTPUserName")) {
+        mkdir "C:\FTP\LocalUser\$global:FTPUserName"
+        mkdir "C:\FTP\LocalUser\$global:FTPUserName\$global:FTPUserName"
+        New-Item -ItemType SymbolicLink -Path "C:\FTP\LocalUser\$global:FTPUserName\General"               -Target "C:\FTP\LocalUser\Public\General"
+        New-Item -ItemType SymbolicLink -Path "C:\FTP\LocalUser\$global:FTPUserName\$global:FTPUserGroupName" -Target "C:\FTP\$global:FTPUserGroupName"
+    }
+}
+
+function setPermissions {
+    if (-not (Get-LocalGroupMember $global:FTPUserGroupName | Where-Object { $_.Name -like "*$global:FTPUserName" })) {
+        Add-LocalGroupMember -Group $global:FTPUserGroupName -Member $global:FTPUserName
+    }
+
+    icacls "C:\FTP\Reprobados"                  /grant "Reprobados:(OI)(CI)M"
+    icacls "C:\FTP\Recursadores"                /grant "Recursadores:(OI)(CI)M"
+    icacls "C:\FTP\LocalUser\Public\General"    /grant "Reprobados:(OI)(CI)M"
+    icacls "C:\FTP\LocalUser\Public\General"    /grant "Recursadores:(OI)(CI)M"
+    icacls "C:\FTP\LocalUser\Public\General"    /grant "IUSR:(OI)(CI)RX"
+
+    $permiso = "$($global:FTPUserName):(OI)(CI)M"
+    icacls "C:\FTP\LocalUser\$global:FTPUserName" /grant:r $permiso
+}
+
+function switchGroup {
+    param([string]$username)
+
+    if (-not (Get-LocalUser -Name $username -ErrorAction SilentlyContinue)) {
+        Write-Host "El usuario no existe."
+        return
+    }
+
+    $currentGroup = $null
+    $newGroup     = $null
+
+    if (Get-LocalGroupMember -Group "Reprobados" -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*$username" }) {
+        $currentGroup = "Reprobados"; $newGroup = "Recursadores"
+    } elseif (Get-LocalGroupMember -Group "Recursadores" -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*$username" }) {
+        $currentGroup = "Recursadores"; $newGroup = "Reprobados"
+    } else {
+        Write-Host "El usuario no pertenece a ningun grupo valido."
+        return
+    }
+
+    Remove-LocalGroupMember -Group $currentGroup -Member $username
+    Add-LocalGroupMember    -Group $newGroup     -Member $username
+    Write-Host "Usuario $username cambiado de $currentGroup a $newGroup correctamente."
+
+    $currentLink = "C:\FTP\LocalUser\$username\$currentGroup"
+    if (Test-Path $currentLink) { cmd /c rmdir "$currentLink" }
+
+    $newLink = "C:\FTP\LocalUser\$username\$newGroup"
+    if (Test-Path $newLink) { cmd /c rmdir "$newLink" }
+
+    New-Item -ItemType SymbolicLink -Path $newLink -Target "C:\FTP\$newGroup"
+    Write-Host "Acceso a carpeta actualizado."
+}
+
+function initFTP {
+    installFTP
+    Set-WebConfigurationProperty `
+        -Filter "/system.applicationHost/sites/site[@name='FTP']/ftpServer/userIsolation" `
+        -Name "mode" -Value "IsolateAllDirectories"
+    $global:ADSI = [ADSI]"WinNT://$env:ComputerName"
+    setupGroups
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.dataChannelPolicy     -Value 0
+    Restart-WebItem "IIS:\Sites\FTP"
+    Write-Host "Servidor FTP listo."
 }
